@@ -1,0 +1,22 @@
+---
+- name: 모든 서버에 tree 패키지 설치 (멀티 OS 대응)
+  hosts: myservers
+  become: yes
+
+  tasks:
+    - name: (RHEL 계열만) EPEL 저장소 설치
+      dnf:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+        state: present
+        disable_gpg_check: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: (Debian 계열만) apt 캐시 갱신
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: tree 패키지 설치 (OS 무관)
+      package:
+        name: tree
+        state: present
